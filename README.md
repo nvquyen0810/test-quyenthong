@@ -1,1 +1,1 @@
-# FPT ECommerce
+# FPT ECommerce (.NET Core 5)
