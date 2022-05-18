@@ -96,6 +96,16 @@ namespace FptEcommerce.API
             services.AddScoped<IProductService, ProductService>();
             services.AddTransient<ICustomerRepository>(x => new CustomerRepository(Configuration.GetConnectionString("LearnDapper")));
             services.AddScoped<ICustomerService, CustomerService>();
+            services.AddTransient<IAddressRepository>(x => new AddressRepository(Configuration.GetConnectionString("LearnDapper")));
+            services.AddScoped<IAddressService, AddressService>();
+            services.AddTransient<IOrderRepository>(x => new OrderRepository(Configuration.GetConnectionString("LearnDapper")));
+            services.AddScoped<IOrderService, OrderService>();
+            services.AddTransient<IOrderDetailRepository>(x => new OrderDetailRepository(Configuration.GetConnectionString("LearnDapper")));
+            services.AddScoped<IOrderDetailService, OrderDetailService>();
+            services.AddTransient<IHistoryEmailRepository>(x => new HistoryEmailRepository(Configuration.GetConnectionString("LearnDapper")));
+            services.AddScoped<IHistoryEmailService, HistoryEmailService>();
+            services.AddTransient<IHistoryPdfRepository>(x => new HistoryPdfRepository(Configuration.GetConnectionString("LearnDapper")));
+            services.AddScoped<IHistoryPdfService, HistoryPdfService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

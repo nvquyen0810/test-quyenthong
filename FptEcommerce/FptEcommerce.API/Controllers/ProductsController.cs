@@ -1,4 +1,5 @@
-﻿using FptEcommerce.API.Models;
+﻿using FptEcommerce.API.Caching;
+using FptEcommerce.API.Models;
 using FptEcommerce.Core.DTOs;
 using FptEcommerce.Core.Interfaces.Services;
 using Microsoft.AspNetCore.Http;
@@ -14,6 +15,7 @@ namespace FptEcommerce.API.Controllers
     [ApiController]
     public class ProductsController : ControllerBase
     {
+
         private readonly IProductService _productService;
 
         public ProductsController(IProductService productService)
@@ -52,13 +54,16 @@ namespace FptEcommerce.API.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [Route("/products/perPage={perPage}&currentPage={currentPage}")]
-        public async Task<IActionResult> getProductsByPage(int perPage, int currentPage)
+        [Route("pages")]
+        public async Task<IActionResult> getProductsByPage(string search, int perPage, int currentPage)
         {
+            if (search == null || search == " ")
+                search = "";
+
             try
             {
-                var count = await _productService.getProductQuantity();
-                var result = await _productService.getProductsByPage(perPage, currentPage);
+                var count = await _productService.getProductQuantity(search);
+                var result = await _productService.getProductsByPage(search, perPage, currentPage);
 
                 return Ok(new Response()
                 {

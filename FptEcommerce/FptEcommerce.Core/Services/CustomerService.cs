@@ -24,5 +24,16 @@ namespace FptEcommerce.Core.Services
             return result;
         }
 
+        public async Task<int> TestCreateReturnId(CustomerInfoUpdateDTO updateDTO)
+        {
+            var result = await _customerRepository.TestCreateReturnId(updateDTO);
+            return result;
+        }
+
+        public async Task<int> UpdateCustomerInfo(int customerId, CustomerInfoUpdateDTO userUpdate)
+        {
+            var result = await _customerRepository.UpdateCustomerInfo(customerId, userUpdate);
+            return result;
+        }
     }
 }

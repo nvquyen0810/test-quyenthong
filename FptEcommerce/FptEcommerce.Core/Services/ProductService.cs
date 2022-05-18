@@ -24,21 +24,27 @@ namespace FptEcommerce.Core.Services
             return result;
         }
 
-        public async Task<int> getProductQuantity()
+        public async Task<int> getProductQuantity(string search)
         {
-            var result = await _productRepository.getProductQuantity();
+            var result = await _productRepository.getProductQuantity(search);
             return result;
         }
 
-        public async Task<List<ProductInfoDTO>> getProductsByPage(int perPage, int currentPage)
+        public async Task<List<ProductInfoDTO>> getProductsByPage(string search, int perPage, int currentPage)
         {
-            var result = await _productRepository.getProductsByPage(perPage, currentPage);
+            var result = await _productRepository.getProductsByPage(search, perPage, currentPage);
             return result;
         }
 
         public async Task<ProductInfoDTO> getProductDetail(int id)
         {
             var result = await _productRepository.getProductDetail(id);
+            return result;
+        }
+
+        public async Task<int> updateProduct(ProductUpdateDTO updateDTO)
+        {
+            var result = await _productRepository.updateProduct(updateDTO);
             return result;
         }
     }

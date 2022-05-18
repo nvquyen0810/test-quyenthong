@@ -10,5 +10,7 @@ namespace FptEcommerce.Core.Interfaces.Services
     public interface ICustomerService
     {
         Task<CustomerInfoDTO> GetUserByUsernameAndPassword(CutomerLoginDTO userLogin);
+        Task<int> UpdateCustomerInfo(int customerId, CustomerInfoUpdateDTO userUpdate);
+        Task<int> TestCreateReturnId(CustomerInfoUpdateDTO updateDTO);
     }
 }

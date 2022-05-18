@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace FptEcommerce.API.Controllers
 {
-    [Route("api/customers")]
+    [Route("api/v1/customers")]
     [ApiController]
     public class CustomersController : ControllerBase
     {
@@ -94,6 +94,15 @@ namespace FptEcommerce.API.Controllers
             }
         }
 
+        [HttpPost]
+        [Route("create-returnid")]
+        public async Task<IActionResult> TestCreateReturnId([FromBody] CustomerInfoUpdateDTO updateDTO)
+        {
+
+            var resultId = await _customerService.TestCreateReturnId(updateDTO);
+            return Ok(resultId);
+        }
+
 
         /// <summary>
         /// Đăng xuất
@@ -137,6 +146,60 @@ namespace FptEcommerce.API.Controllers
                 {
                     Success = false,
                     Message = "Logged out fail"
+                });
+            }
+        }
+
+
+        [HttpPost]
+        [Route("update-info")]
+        [Authorize]
+        public async Task<IActionResult> UpdateInfo([FromBody] CustomerInfoUpdateDTO userUpdate)
+        {
+            string key = HttpContext.Request.Headers["Authorization"];
+            var result = _redisCacheService.Get<string>(key);
+            if (!object.Equals(result, default(string)))
+            {
+                var _id = FptEcommerce.Core.Helper.Token.ValidateToken2(_configuration["AppSettings:SecretKey"], result);
+
+                if (_id < 0)
+                    return Ok(new Response()
+                    {
+                        Success = true,
+                        Message = "CustomerId does not exist",
+
+                    });
+
+                var updateResult = await _customerService.UpdateCustomerInfo(_id, userUpdate);
+
+                if (updateResult > 0)
+                {
+                    return Ok(new Response()
+                    {
+                        Success = true,
+                        Message = "Update info successfuly",
+                        Data = new
+                        {
+                            customerId = _id
+                        }
+                    });
+                }
+                else
+                {
+                    return Ok(new Response()
+                    {
+                        Success = false,
+                        Message = "Update info failed",
+                    });
+                }
+
+            }
+            else     // token null (in redis cache)
+            {
+                return StatusCode(StatusCodes.Status401Unauthorized, new Response()
+                {
+                    Success = false,
+                    Message = "Unauthorized"
                 });
             }
         }

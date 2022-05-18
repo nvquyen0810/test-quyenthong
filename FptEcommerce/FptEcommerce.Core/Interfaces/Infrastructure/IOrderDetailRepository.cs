@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FptEcommerce.Core.DTOs;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,5 +9,7 @@ namespace FptEcommerce.Core.Interfaces.Infrastructure
 {
     public interface IOrderDetailRepository
     {
+        // Tạo mới 1 OrderDetail
+        Task<int> CreateOrderDetail(OrderDetailCreateDTO orderDetailCreateDTO);
     }
 }

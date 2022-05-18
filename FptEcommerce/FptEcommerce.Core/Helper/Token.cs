@@ -32,7 +32,7 @@ namespace FptEcommerce.Core.Helper
                     //new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
 
                     new Claim("UserName", user.Username),
-                    new Claim("Email", user.Email),
+                    new Claim("Email", user.Email == null ? "" : user.Email),
                     new Claim("Id", user.CustomerId.ToString()),
 
                     //roles
@@ -92,6 +92,32 @@ namespace FptEcommerce.Core.Helper
             catch
             {
                 return null;
+            }
+        }
+
+        public static int ValidateToken2(string secretKey, string token)
+        {
+            var key = Encoding.ASCII.GetBytes(secretKey);
+            var handler = new JwtSecurityTokenHandler();
+            var validations = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+                ValidateIssuer = false,
+                ValidateAudience = false
+            };
+
+            try
+            {
+                var claims = handler.ValidateToken(token, validations, out var tokenSecure);
+
+                var result = Convert.ToInt32(claims.FindFirst("Id")?.Value);
+                //var x = 1;
+                return result;
+            }
+            catch
+            {
+                return -1;
             }
         }
 
