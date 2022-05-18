@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace KafkaConsumer
 {
-    public class KafkaMessage
+    public class CreateHistoryDTO
     {
         public int OrderId { get; set; }
-        public string Token { get; set; }
     }
 }

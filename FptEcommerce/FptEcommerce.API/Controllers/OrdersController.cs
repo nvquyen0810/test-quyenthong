@@ -137,24 +137,11 @@ namespace FptEcommerce.API.Controllers
                         #endregion
                     }
 
-                    // test tạo history email & history pdf
-                    //var HistoryEmailCreate = new HistoryEmailCreateDTO()
-                    //{
-                    //    OrderId = resultOrderId
-                    //};
-                    //var resultCreateHistoryEmail = _historyEmailService.CreateHistoryEmail(HistoryEmailCreate);
-
-                    //var HistoryPdfCreate = new HistoryPdfCreateDTO()
-                    //{
-                    //    OrderId = resultOrderId
-                    //};
-                    //var resultCreateHistoryPdf = _historyPdfService.CreateHistoryPdf(HistoryPdfCreate);
-
-
                     // push message to Kafka (Producer)
                     var kafkaMessage = new KafkaMessage()
                     {
-                        OrderId = resultOrderId
+                        OrderId = resultOrderId,
+                        Token = result
                     };
                     var messageKaf = JsonSerializer.Serialize<KafkaMessage>(kafkaMessage);
 
@@ -169,7 +156,7 @@ namespace FptEcommerce.API.Controllers
                         {
                             Object x = producer.ProduceAsync(topic, new Message<string, string>
                             {
-                                Key = "OrderId",
+                                Key = "OrderIdAndToken",
                                 Value = messageKaf
                             })
                                 .GetAwaiter()
@@ -199,20 +186,6 @@ namespace FptEcommerce.API.Controllers
                         }
                     }
 
-
-                    //// response to client
-                    //return Ok(new Response()
-                    //{
-                    //    Success = true,
-                    //    Message = "Created order successfuly",
-                    //    Data = new
-                    //    {
-                    //        OrderID = resultOrderId,
-                    //        //HistoryEmailID = resultCreateHistoryEmail,
-                    //        //HistoryPdfID = resultCreateHistoryPdf,
-                    //        ListOrderDetailID = listOrderDetailId
-                    //    }
-                    //});
                 }
                 else
                 {
@@ -250,6 +223,16 @@ namespace FptEcommerce.API.Controllers
                     {
                         OrderId = createHistory.OrderId
                     };
+
+                    var numSecondsDelay = 10;
+                    // giả vờ delay 10 giây
+                    var t = Task.Run(async delegate
+                    {
+                        await Task.Delay(numSecondsDelay * 1000);
+                        return numSecondsDelay;
+                    });
+                    t.Wait();
+                    //
                     var resultCreateHistoryEmail = await _historyEmailService.CreateHistoryEmail(HistoryEmailCreate);
                     return Ok(new Response()
                     {
@@ -293,6 +276,16 @@ namespace FptEcommerce.API.Controllers
                     {
                         OrderId = createHistory.OrderId
                     };
+
+                    var numSecondsDelay = 10;
+                    // giả vờ delay 10 giây
+                    var t = Task.Run(async delegate
+                    {
+                        await Task.Delay(numSecondsDelay * 1000);
+                        return numSecondsDelay;
+                    });
+                    t.Wait();
+                    //
                     var resultCreateHistoryPdf = await _historyPdfService.CreateHistoryPdf(historyPdfCreateDTO);
 
                     return Ok(new Response()
