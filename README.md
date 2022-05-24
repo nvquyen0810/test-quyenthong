@@ -3,5 +3,5 @@
 + Distributed Cache : (Redis / package StackExchangeRedisCache)
 + JwtBearer (Authorize)
 + FluentValidation 
-+ Dapper
++ Dapper (Sql Server, store procedure)
 + Kafka : (package Confluent.Kafka)
