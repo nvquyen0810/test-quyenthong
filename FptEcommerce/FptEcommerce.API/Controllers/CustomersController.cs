@@ -17,6 +17,7 @@ namespace FptEcommerce.API.Controllers
 {
     [Route("api/v1/customers")]
     [ApiController]
+    [Authorize]
     public class CustomersController : ControllerBase
     {
         private readonly IConfiguration _configuration;
@@ -40,6 +41,7 @@ namespace FptEcommerce.API.Controllers
         /// <returns></returns>
         [HttpPost]
         [Route("login")]
+        [AllowAnonymous]
         public async Task<IActionResult> Login(CutomerLoginDTO userLogin)
         {
 
@@ -100,7 +102,7 @@ namespace FptEcommerce.API.Controllers
         /// <returns></returns>
         [HttpPost]
         [Route("logout")]
-        [Authorize]
+        //[Authorize]
         public IActionResult Logout()
         {
             //var username = "";
@@ -143,7 +145,7 @@ namespace FptEcommerce.API.Controllers
 
         [HttpPost]
         [Route("update-info")]
-        [Authorize]
+        //[Authorize]
         public async Task<IActionResult> UpdateInfo([FromBody] CustomerInfoUpdateDTO userUpdate)
         {
             List<string> ValidationMessages = new List<string>();
