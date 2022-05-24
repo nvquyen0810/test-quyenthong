@@ -46,6 +46,7 @@ namespace FptEcommerce.API.Controllers
             //
             _productService = productService;
             _redisCacheService = redisCacheService;
+            // _redisCacheService = redisCacheService ?? throw new ArgumentNullException(nameof(redisCacheService));
             _configuration = configuration;
         }
 
@@ -102,6 +103,9 @@ namespace FptEcommerce.API.Controllers
             var result = _redisCacheService.Get<string>(key);
             if (!object.Equals(result, default(string)))
             {
+                //var isAuthenticated = User.Identity.IsAuthenticated;
+                //var name = User.Identity.Name;
+                // var userId = Int32.Parse(User.FindFirst("Id")?.Value);
                 var _id = FptEcommerce.Core.Helper.Token.ValidateToken2(_configuration["AppSettings:SecretKey"], result);
 
                 if (_id < 0)
@@ -234,6 +238,8 @@ namespace FptEcommerce.API.Controllers
             {
 
                 // check if Orders(createHistory.OrderId, customerId) exist in Database
+                // var userId = User.FindFirst("Id")?.Value;
+                // var id = Int32.Parse(User.FindFirst("Id")?.Value);
                 var customerIdFromToken = FptEcommerce.Core.Helper.Token.ValidateToken2(_configuration["AppSettings:SecretKey"], result);
                 var customerIdFromOrder = await _orderService.getOrder(createHistory.OrderId);
                 if (customerIdFromOrder.CustomerId != customerIdFromToken)
@@ -301,6 +307,8 @@ namespace FptEcommerce.API.Controllers
             {
 
                 // check if Orders(createHistory.OrderId, customerId) exist in Database
+                // var userId = User.FindFirst("Id")?.Value;
+                // var id = Int32.Parse(User.FindFirst("Id")?.Value);
                 var customerIdFromToken = FptEcommerce.Core.Helper.Token.ValidateToken2(_configuration["AppSettings:SecretKey"], result);
                 var customerIdFromOrder = await _orderService.getOrder(createHistory.OrderId);
                 if (customerIdFromOrder.CustomerId != customerIdFromToken)

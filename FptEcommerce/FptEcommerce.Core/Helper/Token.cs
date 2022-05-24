@@ -1,5 +1,6 @@
 ﻿using FptEcommerce.Core.DTOs;
 using FptEcommerce.Core.Entities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,15 @@ namespace FptEcommerce.Core.Helper
 {
     public class Token
     {
+        // để truy xuất những claim trong context tại thời điểm hiện tại (request hiện tại)
+        // mà ở bên ngoài controller, ta dùng IHttpContextAccessor
+        // còn bên MVC thuần là httpcontext.current.
+        //private readonly IHttpContextAccessor _httpContextAccessor;
+        //public Token(IHttpContextAccessor httpContextAccessor)
+        //{
+        //    _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
+        //}
+
         // generate access token
         public static string GenerateToken(string secretKey, CustomerInfoDTO user, int hour, int minute)
         {
@@ -24,8 +34,10 @@ namespace FptEcommerce.Core.Helper
             var tokenDescription = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new[] {
-                    //new Claim(ClaimTypes.Name, user.FullName),
+                    //new Claim(ClaimTypes.Name, user.FullName),  // Name, NameIdentifier, Role
                     //new Claim(ClaimTypes.Email, user.Email),
+                    // roles: List<string>
+                    //new Claim(ClaimTypes.Role, JsonSerializer.Serialize(roles), JsonClaimValueTypes.JsonArray),
 
                     //new Claim(JwtRegisteredClaimNames.Email, user.Email),
                     //new Claim(JwtRegisteredClaimNames.Sub, user.Email),
@@ -120,6 +132,15 @@ namespace FptEcommerce.Core.Helper
                 return -1;
             }
         }
+
+        //public int ValidateToken3()
+        //{
+        //    var userClaims = _httpContextAccessor.HttpContext.User.Claims;
+
+        //    var id = userClaims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
+        //    var authorities = userClaims.Where(x => x.Type == ClaimTypes.Role).Select(x => x.Value).ToList();
+        //    return Int32.Parse(id);
+        //}
 
         // Cách này hay vì thậm chí ko cần secret Key
         public static Dictionary<string, string> GetInfo2(string token)

@@ -53,6 +53,33 @@ namespace FptEcommerce.API
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "FptEcommerce.API", Version = "v1" });
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description =
+                        "JWT Authorization header using the Bearer scheme.",
+                });
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            },
+                            Scheme = "Bearer",
+                            Name = "Bearer",
+                            In = ParameterLocation.Header
+                        },
+                        new List<string>()
+                    }
+                });
             });
 
 
@@ -95,6 +122,8 @@ namespace FptEcommerce.API
 
 
             // for Services
+            // IHttpContextAccessor is no longer wired up by default, you have to register it yourself
+            // services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<IProductRepository>(x => new ProductRepository(Configuration.GetConnectionString("LearnDapper")));
             services.AddScoped<IProductService, ProductService>();
             services.AddTransient<ICustomerRepository>(x => new CustomerRepository(Configuration.GetConnectionString("LearnDapper")));

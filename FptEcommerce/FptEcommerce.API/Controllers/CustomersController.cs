@@ -26,10 +26,12 @@ namespace FptEcommerce.API.Controllers
 
         public CustomersController(IConfiguration configuration,
             IRedisCacheService redisCacheService,
-            ICustomerService customerService)
+            ICustomerService customerService
+            )
         {
             _configuration = configuration;
             _redisCacheService = redisCacheService;
+            //_redisCacheService = redisCacheService ?? throw new ArgumentNullException(nameof(redisCacheService));
             _customerService = customerService;
         }
 
@@ -105,6 +107,8 @@ namespace FptEcommerce.API.Controllers
         //[Authorize]
         public IActionResult Logout()
         {
+            //var userId = User.FindFirst("Id")?.Value;
+            //var x = User.Identity.Name;
             //var username = "";
             //var id = "";
             //var email = "";
