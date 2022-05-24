@@ -61,8 +61,16 @@ namespace FptEcommerce.API.Controllers
                 }
 
             }
-            catch
+            catch (Exception ex)  //ex.Message, ex.Data
             {
+                //var result = new
+                //{
+                //    devMsg = ex.Message,
+                //    useMsg = "có lỗi xảy ra",
+                //    data = DBNull.Value,
+                //    moreInfo = ""
+                //};
+                //return StatusCode(500, result);
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }

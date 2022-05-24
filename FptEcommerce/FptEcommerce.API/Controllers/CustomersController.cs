@@ -94,16 +94,6 @@ namespace FptEcommerce.API.Controllers
             }
         }
 
-        [HttpPost]
-        [Route("create-returnid")]
-        public async Task<IActionResult> TestCreateReturnId([FromBody] CustomerInfoUpdateDTO updateDTO)
-        {
-
-            var resultId = await _customerService.TestCreateReturnId(updateDTO);
-            return Ok(resultId);
-        }
-
-
         /// <summary>
         /// Đăng xuất
         /// </summary>
@@ -156,6 +146,22 @@ namespace FptEcommerce.API.Controllers
         [Authorize]
         public async Task<IActionResult> UpdateInfo([FromBody] CustomerInfoUpdateDTO userUpdate)
         {
+            List<string> ValidationMessages = new List<string>();
+            var validateResult = await new CustomerUpdateInfoValidator().ValidateAsync(userUpdate);
+            if (!validateResult.IsValid)
+            {
+                foreach (ValidationFailure failure in validateResult.Errors)
+                {
+                    ValidationMessages.Add(failure.ErrorMessage);
+                }
+
+                return BadRequest(new
+                {
+                    Success = false,
+                    Message = ValidationMessages,
+                });
+            }
+
             string key = HttpContext.Request.Headers["Authorization"];
             var result = _redisCacheService.Get<string>(key);
             if (!object.Equals(result, default(string)))

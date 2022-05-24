@@ -5,6 +5,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace KafkaConsumer
 {
@@ -155,11 +156,17 @@ namespace KafkaConsumer
                         //client.DefaultRequestHeaders.Add("Authorization", "Bearer " + accessToken);
                         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
-                        Thread t1 = new Thread(() => TaskEmail(client, data));
-                        Thread t2 = new Thread(() => TaskPdf(client, data));
+                        // Cách 1
+                        //Thread t1 = new Thread(() => TaskEmail(client, data));
+                        //Thread t2 = new Thread(() => TaskPdf(client, data));
+                        //t1.Start();
+                        //t2.Start();
+
+                        // Cách 2
+                        Task t1 = new Task(() => TaskEmail(client, data));
+                        Task t2 = new Task(() => TaskPdf(client, data));
                         t1.Start();
                         t2.Start();
-
 
                     }
                 }

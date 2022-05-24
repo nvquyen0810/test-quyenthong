@@ -77,12 +77,27 @@ namespace FptEcommerce.API.Controllers
             }
         }
 
-
+        /// <summary>
+        /// Tạo order mới
+        /// </summary>
+        /// <param name="orderCreateDTO"></param>
+        /// <returns></returns>
         [HttpPost]
-        [Route("create")]
+        [Route("create")]  // có thể đặt là 'checkout'
         [Authorize]
         public async Task<IActionResult> CreateOrder([FromBody] OrderCreateDTO orderCreateDTO)
         {
+            if (orderCreateDTO.TotalMoney <= 0
+                || orderCreateDTO.CustomerId <= 0
+                || orderCreateDTO.AddressId <= 0
+                || orderCreateDTO.Cart == null
+                || orderCreateDTO.Cart?.Count == 0)
+                return BadRequest(new Response()
+                {
+                    Success = false,
+                    Message = "Invalid data from request body",
+                });
+
             string key = HttpContext.Request.Headers["Authorization"];
             var result = _redisCacheService.Get<string>(key);
             if (!object.Equals(result, default(string)))
@@ -163,7 +178,7 @@ namespace FptEcommerce.API.Controllers
                                 .GetResult();
 
                             // response to client
-                            return Ok(new Response()
+                            return StatusCode(StatusCodes.Status201Created, new Response()
                             {
                                 Success = true,
                                 Message = "Created order successfuly",
@@ -217,6 +232,19 @@ namespace FptEcommerce.API.Controllers
             var result = _redisCacheService.Get<string>(key);
             if (!object.Equals(result, default(string)))
             {
+
+                // check if Orders(createHistory.OrderId, customerId) exist in Database
+                var customerIdFromToken = FptEcommerce.Core.Helper.Token.ValidateToken2(_configuration["AppSettings:SecretKey"], result);
+                var customerIdFromOrder = await _orderService.getOrder(createHistory.OrderId);
+                if (customerIdFromOrder.CustomerId != customerIdFromToken)
+                    return BadRequest(new Response()
+                    {
+                        Success = false,
+                        Message = "Invalid data from request body",
+                    });
+
+
+                // Start sending email
                 try
                 {
                     var HistoryEmailCreate = new HistoryEmailCreateDTO()
@@ -225,7 +253,7 @@ namespace FptEcommerce.API.Controllers
                     };
 
                     var numSecondsDelay = 10;
-                    // giả vờ delay 10 giây
+                    // giả vờ delay 10 giây, có thể chỉ dùng 1 câu lệnh await Task.Delay(numSecondsDelay * 1000) là đủ
                     var t = Task.Run(async delegate
                     {
                         await Task.Delay(numSecondsDelay * 1000);
@@ -234,12 +262,13 @@ namespace FptEcommerce.API.Controllers
                     t.Wait();
                     //
                     var resultCreateHistoryEmail = await _historyEmailService.CreateHistoryEmail(HistoryEmailCreate);
-                    return Ok(new Response()
+                    return StatusCode(StatusCodes.Status201Created, new Response()
                     {
                         Success = true,
                         Message = "Created history email successfuly",
                         Data = resultCreateHistoryEmail
                     });
+
                 }
                 catch (Exception ex)
                 {
@@ -270,6 +299,18 @@ namespace FptEcommerce.API.Controllers
             var result = _redisCacheService.Get<string>(key);
             if (!object.Equals(result, default(string)))
             {
+
+                // check if Orders(createHistory.OrderId, customerId) exist in Database
+                var customerIdFromToken = FptEcommerce.Core.Helper.Token.ValidateToken2(_configuration["AppSettings:SecretKey"], result);
+                var customerIdFromOrder = await _orderService.getOrder(createHistory.OrderId);
+                if (customerIdFromOrder.CustomerId != customerIdFromToken)
+                    return BadRequest(new Response()
+                    {
+                        Success = false,
+                        Message = "Invalid data from request body",
+                    });
+
+                // Start creating pdf
                 try
                 {
                     var historyPdfCreateDTO = new HistoryPdfCreateDTO()
@@ -278,7 +319,7 @@ namespace FptEcommerce.API.Controllers
                     };
 
                     var numSecondsDelay = 10;
-                    // giả vờ delay 10 giây
+                    // giả vờ delay 10 giây, có thể chỉ dùng 1 câu lệnh await Task.Delay(numSecondsDelay * 1000) là đủ
                     var t = Task.Run(async delegate
                     {
                         await Task.Delay(numSecondsDelay * 1000);
@@ -287,8 +328,7 @@ namespace FptEcommerce.API.Controllers
                     t.Wait();
                     //
                     var resultCreateHistoryPdf = await _historyPdfService.CreateHistoryPdf(historyPdfCreateDTO);
-
-                    return Ok(new Response()
+                    return StatusCode(StatusCodes.Status201Created, new Response()
                     {
                         Success = true,
                         Message = "Created history pdf successfuly",

@@ -23,12 +23,14 @@ namespace FptEcommerce.Infrastructure.Repositories
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                //string query = @"SELECT TOP 4*from dbo.Products ORDER BY ProductID DESC";
-                string query = @"SELECT AddressID, Location
-                                 FROM dbo.Addresses";
-                var result = await connection.QueryAsync<AddressDTO>(query);
-
-                return result.ToList();
+                //string query = @"SELECT AddressID, Location
+                //                 FROM dbo.Addresses";
+                //var result = await connection.QueryAsync<AddressDTO>(query);
+                //string query1 = @"Proc_GetAddresses";
+                //var result1 = await connection.QueryAsync<AddressDTO>(query1, commandType: System.Data.CommandType.StoredProcedure);
+                string query2 = @"EXEC Proc_GetAddresses";
+                var result2 = await connection.QueryAsync<AddressDTO>(query2);
+                return result2.ToList();
             }
         }
     }

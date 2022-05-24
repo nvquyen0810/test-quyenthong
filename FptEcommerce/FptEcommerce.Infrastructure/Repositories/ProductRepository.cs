@@ -24,8 +24,7 @@ namespace FptEcommerce.Infrastructure.Repositories
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                //string query = @"SELECT TOP 4*from dbo.Products ORDER BY ProductID DESC";
-                string query = @"EXEC Test";
+                string query = @"EXEC Proc_GetLastestProducts";
                 var result = await connection.QueryAsync<ProductInfoDTO>(query);
 
                 return result.ToList();
@@ -78,7 +77,6 @@ namespace FptEcommerce.Infrastructure.Repositories
                                 WHERE LOWER(Name) LIKE N'%' + @my + '%'";
                 //string query = @"EXEC Test";
                 var result = await connection.ExecuteScalarAsync<int>(query, new { my = search.ToLower() });
-                var x = 2;
                 return result;
             }
         }

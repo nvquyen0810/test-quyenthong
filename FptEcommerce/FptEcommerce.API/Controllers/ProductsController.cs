@@ -55,7 +55,7 @@ namespace FptEcommerce.API.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("pages")]
-        public async Task<IActionResult> getProductsByPage(string search, int perPage, int currentPage)
+        public async Task<IActionResult> getProductsByPage(string search, int perPage = 5, int currentPage = 1)
         {
             if (search == null || search == " ")
                 search = "";

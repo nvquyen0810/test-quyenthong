@@ -89,6 +89,9 @@ namespace FptEcommerce.API
             AssemblyScanner
                 .FindValidatorsInAssembly(typeof(CustomerLoginValidator).Assembly)
                 .ForEach(item => services.AddScoped(item.InterfaceType, item.ValidatorType));
+            AssemblyScanner
+                .FindValidatorsInAssembly(typeof(CustomerUpdateInfoValidator).Assembly)
+                .ForEach(item => services.AddScoped(item.InterfaceType, item.ValidatorType));
 
 
             // for Services
@@ -122,6 +125,7 @@ namespace FptEcommerce.API
             }
 
             app.UseHttpsRedirection();
+            //app.UseStaticFiles();
 
             app.UseRouting();
 
