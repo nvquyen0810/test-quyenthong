@@ -109,12 +109,6 @@ namespace FptEcommerce.API.Controllers
         {
             //var userId = User.FindFirst("Id")?.Value;
             //var x = User.Identity.Name;
-            //var username = "";
-            //var id = "";
-            //var email = "";
-
-            //var claimName = "";
-            //var claimEmail = "";
 
             //if (User.Identity.IsAuthenticated)
             //{

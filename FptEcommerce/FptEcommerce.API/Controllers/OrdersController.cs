@@ -17,6 +17,7 @@ namespace FptEcommerce.API.Controllers
 {
     [Route("api/v1/orders")]
     [ApiController]
+    [Authorize]
     public class OrdersController : ControllerBase
     {
         private readonly IOrderService _orderService;
@@ -52,13 +53,14 @@ namespace FptEcommerce.API.Controllers
 
 
         /// <summary>
-        /// lấy thông tin hóa đơn từ id
+        /// lấy thông tin hóa đơn từ id, API này chỉ dùng để test
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet]
         [Route("{id}")]
-        public async Task<IActionResult> getOrder(int id)
+        [AllowAnonymous]
+        public async Task<IActionResult> getOrder(int id)   // API này chỉ dùng để test
         {
             try
             {
@@ -85,7 +87,6 @@ namespace FptEcommerce.API.Controllers
         /// <returns></returns>
         [HttpPost]
         [Route("create")]  // có thể đặt là 'checkout'
-        [Authorize]
         public async Task<IActionResult> CreateOrder([FromBody] OrderCreateDTO orderCreateDTO)
         {
             if (orderCreateDTO.TotalMoney <= 0
@@ -103,6 +104,7 @@ namespace FptEcommerce.API.Controllers
             var result = _redisCacheService.Get<string>(key);
             if (!object.Equals(result, default(string)))
             {
+                // có thể lấy ra id qua claims
                 //var isAuthenticated = User.Identity.IsAuthenticated;
                 //var name = User.Identity.Name;
                 // var userId = Int32.Parse(User.FindFirst("Id")?.Value);
@@ -229,14 +231,13 @@ namespace FptEcommerce.API.Controllers
 
         [HttpPost]
         [Route("create-history-email")]
-        [Authorize]
         public async Task<IActionResult> CreateHistoryEmail([FromBody] CreateHistoryDTO createHistory)
         {
             string key = HttpContext.Request.Headers["Authorization"];
             var result = _redisCacheService.Get<string>(key);
             if (!object.Equals(result, default(string)))
             {
-
+                // có thể lấy ra id qua claims
                 // check if Orders(createHistory.OrderId, customerId) exist in Database
                 // var userId = User.FindFirst("Id")?.Value;
                 // var id = Int32.Parse(User.FindFirst("Id")?.Value);
@@ -298,14 +299,13 @@ namespace FptEcommerce.API.Controllers
 
         [HttpPost]
         [Route("create-history-pdf")]
-        [Authorize]
         public async Task<IActionResult> CreateHistoryPdf([FromBody] CreateHistoryDTO createHistory)
         {
             string key = HttpContext.Request.Headers["Authorization"];
             var result = _redisCacheService.Get<string>(key);
             if (!object.Equals(result, default(string)))
             {
-
+                // có thể lấy ra id qua claims
                 // check if Orders(createHistory.OrderId, customerId) exist in Database
                 // var userId = User.FindFirst("Id")?.Value;
                 // var id = Int32.Parse(User.FindFirst("Id")?.Value);
