@@ -77,9 +77,10 @@ namespace FptEcommerce.API.Controllers
                 }
 
                 // lưu vào token vào redis
-                var accessToken = FptEcommerce.Core.Helper.Token.GenerateToken(_configuration["AppSettings:SecretKey"], user, 24, 0);
+                var accessToken = FptEcommerce.Core.Helper.Token.GenerateToken(_configuration["AppSettings:SecretKey"], user, 0, 60);
                 string key = "Bearer " + accessToken;
-                _redisCacheService.Set<string>(key, accessToken, 60 * 24, 60 * 24);
+                //_redisCacheService.Set<string>(key, accessToken, 60 * 24, 60 * 24);
+                _redisCacheService.Set<string>(key, accessToken, 60, 60);
                 //cấp token
                 return Ok(new Response
                 {
@@ -92,9 +93,15 @@ namespace FptEcommerce.API.Controllers
                     }
                 });
             }
-            catch
+            catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError);
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    new Response
+                    {
+                        Success = false,
+                        Message = ex.Message
+                    }
+                    );
             }
         }
 
@@ -119,25 +126,37 @@ namespace FptEcommerce.API.Controllers
             //    //claimName = User.FindFirst(ClaimTypes.Name)?.Value;
             //    //claimEmail = User.FindFirst(ClaimTypes.Email)?.Value;
             //}
-            string key = HttpContext.Request.Headers["Authorization"];
-            var result = _redisCacheService.Get<string>(key);
-            if (!object.Equals(result, default(string)))
+            try
             {
-                _redisCacheService.Remove(key);
-                return Ok(new Response()
+                string key = HttpContext.Request.Headers["Authorization"];
+                var result = _redisCacheService.Get<string>(key);
+                if (!object.Equals(result, default(string)))
                 {
-                    Success = true,
-                    Message = "Logged out successfuly"
-                });
+                    _redisCacheService.Remove(key);
+                    return Ok(new Response()
+                    {
+                        Success = true,
+                        Message = "Logged out successfuly"
+                    });
+                }
+                else     // token null (in redis cache)
+                {
+                    return StatusCode(StatusCodes.Status401Unauthorized, new Response()
+                    {
+                        Success = false,
+                        Message = "Logged out fail"
+                    });
+                }
             }
-            else     // token null (in redis cache)
+            catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status401Unauthorized, new Response()
+                return StatusCode(500, new Response()
                 {
                     Success = false,
-                    Message = "Logged out fail"
+                    Message = ex.Message
                 });
             }
+
         }
 
 

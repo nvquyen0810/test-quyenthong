@@ -175,13 +175,43 @@ namespace FptEcommerce.API.Controllers
                     {
                         try
                         {
-                            Object x = producer.ProduceAsync(topic, new Message<string, string>
+                            Object xEmail = producer.ProduceAsync(topic, new Message<string, string>
                             {
-                                Key = "OrderIdAndToken",
-                                Value = messageKaf
+                                Key = "OrderIdAndTokenEmail",
+                                Value = messageKaf  // OrderId & Token
                             })
                                 .GetAwaiter()
                                 .GetResult();
+
+                            Object xPdf = producer.ProduceAsync(topic, new Message<string, string>
+                            {
+                                Key = "OrderIdAndTokenPdf",
+                                Value = messageKaf   // OrderId & Token
+                            })
+                                .GetAwaiter()
+                                .GetResult();
+
+                            //Task tEmail = new Task(() =>
+                            //producer.ProduceAsync(topic, new Message<string, string>
+                            //{
+                            //    Key = "OrderIdAndTokenEmail",
+                            //    Value = messageKaf  // OrderId & Token
+                            //})
+                            //    .GetAwaiter()
+                            //    .GetResult());
+
+                            //Task tPdf = new Task(() =>
+                            //producer.ProduceAsync(topic, new Message<string, string>
+                            //{
+                            //    Key = "OrderIdAndTokenPdf",
+                            //    Value = messageKaf  // OrderId & Token
+                            //})
+                            //    .GetAwaiter()
+                            //    .GetResult());
+
+                            //tEmail.Start();
+                            //tPdf.Start();
+
 
                             // response to client
                             return StatusCode(StatusCodes.Status201Created, new Response()
@@ -259,8 +289,8 @@ namespace FptEcommerce.API.Controllers
                         OrderId = createHistory.OrderId
                     };
 
-                    var numSecondsDelay = 10;
-                    // giả vờ delay 10 giây, có thể chỉ dùng 1 câu lệnh await Task.Delay(numSecondsDelay * 1000) là đủ
+                    var numSecondsDelay = 8;
+                    // giả vờ delay 5 giây, có thể chỉ dùng 1 câu lệnh await Task.Delay(numSecondsDelay * 1000) là đủ
                     var t = Task.Run(async delegate
                     {
                         await Task.Delay(numSecondsDelay * 1000);
@@ -326,8 +356,8 @@ namespace FptEcommerce.API.Controllers
                         OrderId = createHistory.OrderId
                     };
 
-                    var numSecondsDelay = 10;
-                    // giả vờ delay 10 giây, có thể chỉ dùng 1 câu lệnh await Task.Delay(numSecondsDelay * 1000) là đủ
+                    var numSecondsDelay = 8;
+                    // giả vờ delay 5 giây, có thể chỉ dùng 1 câu lệnh await Task.Delay(numSecondsDelay * 1000) là đủ
                     var t = Task.Run(async delegate
                     {
                         await Task.Delay(numSecondsDelay * 1000);

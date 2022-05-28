@@ -49,7 +49,7 @@ namespace FptEcommerce.Core.Helper
 
                     //roles
 
-                    new Claim("TokenId", Guid.NewGuid().ToString())
+                    //new Claim("TokenId", Guid.NewGuid().ToString())
                 }),
 
                 Expires = DateTime.UtcNow.AddMinutes(hour * 60 + minute),

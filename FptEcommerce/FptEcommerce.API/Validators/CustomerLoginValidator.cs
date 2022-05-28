@@ -12,10 +12,18 @@ namespace FptEcommerce.API.Validators
         public CustomerLoginValidator()
         {
             RuleFor(x => x.Username)
-                .NotEmpty().WithMessage("Username is required");
+                //.Cascade(CascadeMode.StopOnFirstFailure)
+                .NotEmpty().WithMessage("{PropertyName} is required");
+            //.Must(IsValidName).WithMessage("{PropertyName} should be all letters.");
+            //.Length(2, 255).WithMessage("{PropertyName} length < 2");
 
             RuleFor(x => x.Password)
-                .NotEmpty().WithMessage("Password is required");
+                .NotEmpty().WithMessage("{PropertyName} is required");
+        }
+
+        private bool IsValidName(string name)
+        {
+            return name.All(Char.IsLetter);
         }
     }
 }
