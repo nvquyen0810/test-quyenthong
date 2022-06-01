@@ -20,7 +20,6 @@ namespace KafkaConsumer
             list.Add(offset);
 
             var urlEmail = "https://localhost:44362/api/v1/orders/create-history-email";
-
             object messagePrintConsole = "";
             try
             {
@@ -31,13 +30,37 @@ namespace KafkaConsumer
 
                 // consumer.Commit(list cr.TopicPartitionOffset)
                 messagePrintConsole = finalResultEmail.Data;
-
             }
             finally
             {
                 Console.WriteLine("HistoryEmailID: " + messagePrintConsole + ", Commited offset: " + offset);
             }
+        }
 
+        static async Task TaskEmailAsync2(HttpClient client, StringContent data,
+            IConsumer<string, string> consumer, ConsumeResult<string, string> cr)
+        {
+            List<TopicPartitionOffset> list = new List<TopicPartitionOffset>();
+            var offset = cr.TopicPartitionOffset;
+            list.Add(offset);
+
+            var urlEmail = "https://localhost:44362/api/v1/orders/create-history-email";
+            object messagePrintConsole = "";
+            try
+            {
+                var responseEmail = await client.PostAsync(urlEmail, data);
+                if (responseEmail.IsSuccessStatusCode)
+                {
+                    consumer.Commit(cr);
+                    var contentsEmail = responseEmail.Content.ReadAsStringAsync().Result;
+                    var finalResultEmail = Newtonsoft.Json.JsonConvert.DeserializeObject<Response>(contentsEmail);
+                    Console.WriteLine("HistoryEmailID: " + messagePrintConsole + ", Commited offset: " + offset);
+                }
+            }
+            catch (ConsumeException e)
+            {
+                Console.WriteLine($"Error occured: {e.Error.Reason}");
+            }
 
         }
 
@@ -49,16 +72,13 @@ namespace KafkaConsumer
             list.Add(offset);
 
             var urlPdf = "https://localhost:44362/api/v1/orders/create-history-pdf";
-
             object messagePrintConsole = "";
-
             try
             {
                 var responsePdf = client.PostAsync(urlPdf, data);
                 consumer.Commit(cr);
                 var contentsPdf = responsePdf.Result.Content.ReadAsStringAsync().Result;
                 var finalResultPdf = Newtonsoft.Json.JsonConvert.DeserializeObject<Response>(contentsPdf);
-
                 messagePrintConsole = finalResultPdf.Data;
             }
             finally
@@ -107,9 +127,9 @@ namespace KafkaConsumer
 
                         try
                         {
-                            //if (cr.IsPartitionEOF || string.IsNullOrEmpty(cr?.Message?.Value)) continue;
-                            //if (cr.IsPartitionEOF || cr.Message.Value == null) continue;
                             if (string.IsNullOrEmpty(cr?.Message?.Value)) continue;
+                            //if (cr.IsPartitionEOF || cr.Message.Value == null) continue;
+                            //if (string.IsNullOrEmpty(cr?.Message?.Value)) continue;
 
 
                             KafkaMessage? messageValue = JsonSerializer.Deserialize<KafkaMessage>(cr.Message.Value);

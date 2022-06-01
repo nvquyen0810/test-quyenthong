@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -77,10 +78,10 @@ namespace FptEcommerce.API.Controllers
                 }
 
                 // lưu vào token vào redis
-                var accessToken = FptEcommerce.Core.Helper.Token.GenerateToken(_configuration["AppSettings:SecretKey"], user, 0, 60);
+                var accessToken = FptEcommerce.Core.Helper.Token.GenerateToken(_configuration["AppSettings:SecretKey"], user, 24, 0);
                 string key = "Bearer " + accessToken;
-                //_redisCacheService.Set<string>(key, accessToken, 60 * 24, 60 * 24);
-                _redisCacheService.Set<string>(key, accessToken, 60, 60);
+                _redisCacheService.Set<string>(key, accessToken, 60 * 24, 60 * 24);
+                //_redisCacheService.Set<string>(key, accessToken, 1, 1);
                 //cấp token
                 return Ok(new Response
                 {
@@ -92,6 +93,16 @@ namespace FptEcommerce.API.Controllers
                         user
                     }
                 });
+            }
+            catch (RedisConnectionException ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                   new Response
+                   {
+                       Success = false,
+                       Message = "It was not possible to connect to the redis server(s)"
+                   }
+                   );
             }
             catch (Exception ex)
             {
@@ -129,7 +140,9 @@ namespace FptEcommerce.API.Controllers
             try
             {
                 string key = HttpContext.Request.Headers["Authorization"];
+
                 var result = _redisCacheService.Get<string>(key);
+
                 if (!object.Equals(result, default(string)))
                 {
                     _redisCacheService.Remove(key);
@@ -147,6 +160,16 @@ namespace FptEcommerce.API.Controllers
                         Message = "Logged out fail"
                     });
                 }
+            }
+            catch (RedisConnectionException ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                   new Response
+                   {
+                       Success = false,
+                       Message = "It was not possible to connect to the redis server(s)"
+                   }
+                   );
             }
             catch (Exception ex)
             {

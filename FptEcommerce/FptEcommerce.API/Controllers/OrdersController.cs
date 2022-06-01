@@ -180,7 +180,7 @@ namespace FptEcommerce.API.Controllers
                                 Key = "OrderIdAndTokenEmail",
                                 Value = messageKaf  // OrderId & Token
                             })
-                                .GetAwaiter()
+                                .GetAwaiter()     // tìm hiểu lại thuật ngữ
                                 .GetResult();
 
                             Object xPdf = producer.ProduceAsync(topic, new Message<string, string>
