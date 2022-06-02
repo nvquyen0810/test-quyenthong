@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace FptEcommerce.API.Controllers
@@ -79,6 +80,7 @@ namespace FptEcommerce.API.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
+
 
         /// <summary>
         /// Tạo order mới
@@ -175,42 +177,53 @@ namespace FptEcommerce.API.Controllers
                     {
                         try
                         {
-                            Object xEmail = producer.ProduceAsync(topic, new Message<string, string>
+
+
+                            // Cách 1
+                            //Task t1 = Task.Run(() => producer.ProduceAsync(topic, new Message<string, string>
+                            //{
+                            //    Key = "OrderIdAndTokenEmail",
+                            //    Value = messageKaf  // OrderId & Token
+                            //}));
+
+                            //Task t2 = Task.Run(() => producer.ProduceAsync(topic, new Message<string, string>
+                            //{
+                            //    Key = "OrderIdAndTokenPdf",
+                            //    Value = messageKaf   // OrderId & Token
+                            //}));
+
+                            //await Task.WhenAll(t1, t2).ConfigureAwait(false);
+
+
+                            // Cách 2
+                            await producer.ProduceAsync(topic, new Message<string, string>
                             {
                                 Key = "OrderIdAndTokenEmail",
                                 Value = messageKaf  // OrderId & Token
-                            })
-                                .GetAwaiter()     // tìm hiểu lại thuật ngữ
-                                .GetResult();
+                            }).ConfigureAwait(false);
 
-                            Object xPdf = producer.ProduceAsync(topic, new Message<string, string>
+                            await producer.ProduceAsync(topic, new Message<string, string>
                             {
                                 Key = "OrderIdAndTokenPdf",
                                 Value = messageKaf   // OrderId & Token
-                            })
-                                .GetAwaiter()
-                                .GetResult();
+                            }).ConfigureAwait(false);
 
-                            //Task tEmail = new Task(() =>
-                            //producer.ProduceAsync(topic, new Message<string, string>
+
+                            //Object xEmail = producer.ProduceAsync(topic, new Message<string, string>
                             //{
                             //    Key = "OrderIdAndTokenEmail",
                             //    Value = messageKaf  // OrderId & Token
                             //})
-                            //    .GetAwaiter()
-                            //    .GetResult());
+                            //    .GetAwaiter()     // tìm hiểu lại thuật ngữ
+                            //    .GetResult();
 
-                            //Task tPdf = new Task(() =>
-                            //producer.ProduceAsync(topic, new Message<string, string>
+                            //Object xPdf = producer.ProduceAsync(topic, new Message<string, string>
                             //{
                             //    Key = "OrderIdAndTokenPdf",
-                            //    Value = messageKaf  // OrderId & Token
+                            //    Value = messageKaf   // OrderId & Token
                             //})
                             //    .GetAwaiter()
-                            //    .GetResult());
-
-                            //tEmail.Start();
-                            //tPdf.Start();
+                            //    .GetResult();
 
 
                             // response to client
