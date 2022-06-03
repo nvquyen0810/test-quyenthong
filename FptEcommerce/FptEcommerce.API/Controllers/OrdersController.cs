@@ -179,34 +179,21 @@ namespace FptEcommerce.API.Controllers
                         {
 
 
-                            // Cách 1
-                            //Task t1 = Task.Run(() => producer.ProduceAsync(topic, new Message<string, string>
-                            //{
-                            //    Key = "OrderIdAndTokenEmail",
-                            //    Value = messageKaf  // OrderId & Token
-                            //}));
 
-                            //Task t2 = Task.Run(() => producer.ProduceAsync(topic, new Message<string, string>
-                            //{
-                            //    Key = "OrderIdAndTokenPdf",
-                            //    Value = messageKaf   // OrderId & Token
-                            //}));
-
-                            //await Task.WhenAll(t1, t2).ConfigureAwait(false);
-
-
-                            // Cách 2
-                            await producer.ProduceAsync(topic, new Message<string, string>
+                            Task t1 = Task.Run(() => producer.ProduceAsync(topic, new Message<string, string>
                             {
                                 Key = "OrderIdAndTokenEmail",
                                 Value = messageKaf  // OrderId & Token
-                            }).ConfigureAwait(false);
+                            }));
 
-                            await producer.ProduceAsync(topic, new Message<string, string>
+                            Task t2 = Task.Run(() => producer.ProduceAsync(topic, new Message<string, string>
                             {
                                 Key = "OrderIdAndTokenPdf",
                                 Value = messageKaf   // OrderId & Token
-                            }).ConfigureAwait(false);
+                            }));
+
+                            await Task.WhenAll(t1, t2).ConfigureAwait(false);
+
 
 
                             //Object xEmail = producer.ProduceAsync(topic, new Message<string, string>
