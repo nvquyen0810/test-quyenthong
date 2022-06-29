@@ -77,7 +77,7 @@ namespace FptEcommerce.API.Controllers
                 }
                  );
             }
-            catch (Exception ex)
+            catch (Exception ex)  // đáng lẽ phải print ra console hoặc ghi log ra ex.Message
             {
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }

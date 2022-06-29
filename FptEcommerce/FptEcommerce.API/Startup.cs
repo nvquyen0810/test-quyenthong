@@ -99,7 +99,7 @@ namespace FptEcommerce.API
                 {
                     opt.TokenValidationParameters = new TokenValidationParameters
                     {
-                        //tự cấp token
+                        // Đáng lẽ phải validate Issuer
                         ValidateIssuer = false,
                         ValidateAudience = false,
 
