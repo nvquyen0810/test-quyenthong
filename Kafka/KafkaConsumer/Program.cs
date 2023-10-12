@@ -18,7 +18,7 @@ namespace KafkaConsumer
             List<TopicPartitionOffset> list = new List<TopicPartitionOffset>();
             var offset = cr.TopicPartitionOffset;
             list.Add(offset);
-
+			// quyện test
             var urlEmail = "https://localhost:44362/api/v1/orders/create-history-email";
             object messagePrintConsole = "";
             try
